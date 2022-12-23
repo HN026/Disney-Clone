@@ -7,6 +7,7 @@ import {
   selectUserName,
   selectUserPhoto,
   setUserLoginDetails,
+  setSignOutState,
 }  from "../features/user/userSlice";
 
 
@@ -29,11 +30,22 @@ const Header = (props) => {
    
 
   const handleAuth = () => {
-      auth.signInWithPopup(provider).then((result) => {
-        setUser(result.user);
-      }).catch((error) => {
-        alert(error.message);
-      });
+      if(!userName){
+         auth
+           .signInWithPopup(provider)
+           .then((result) => {
+             setUser(result.user);
+           })
+           .catch((error) => {
+             alert(error.message);
+           });
+      } else if (userName) {
+        auth.signOut().then(() => {
+          dispatch(setSignOutState())
+          history.push('/')
+        }).catch((err) => alert(err.message))
+      }
+     
   };
 
   const setUser = (user) => {
@@ -228,6 +240,22 @@ position: relative;
 height: 48px;
 width: 48px;
 display: flex;
+cursor: pointer;
+align-items: center;
+justify-content: center;
+
+${UserImg} {
+  border-radius: 50%;
+  width: 100%;
+  height: 100%;
+}
+
+&:hover{
+  ${DropDown}{
+    opacity: 1;
+    transition-duration: 1s;
+  }
+}
 `;
 
 
