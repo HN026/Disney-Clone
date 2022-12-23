@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import styled from "styled-components";
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from "react-router-dom";
@@ -16,11 +17,20 @@ const Header = (props) => {
   const history = useHistory();
   const userName = useSelector(selectUserName);
   const userPhoto = useSelector(selectUserPhoto);
+
+  useEffect(() => {
+    auth.onAuthStateChanged(async (user) => {
+      if(user){
+        setUser(user);
+        history.push('/home');
+      }
+    });
+  }, [userName]);
    
 
   const handleAuth = () => {
       auth.signInWithPopup(provider).then((result) => {
-        setUserLoginDetails(result.user);
+        setUser(result.user);
       }).catch((error) => {
         alert(error.message);
       });
@@ -72,7 +82,12 @@ const Header = (props) => {
               <span>SERIES</span>
             </a>
           </NavMenu>
-          <UserImg src={userPhoto} alt={userName} />
+          <SignOut>
+            <UserImg src={userPhoto} alt={userName} />
+            <DropDown>
+              <span onClick = {handleAuth} >Sign Out</span>
+            </DropDown>
+          </SignOut>
         </>
       )}
     </Nav>
@@ -192,6 +207,28 @@ transition: all 0.2s ease 0s;
 const UserImg = styled.img`
 height: 100%;
 `
+
+const DropDown = styled.div`
+position: absolute;
+top: 48px;
+right: 0px;
+background: rgb(19,19,19);
+border: 1px solid rgba(151,151,151,0.34);
+border-radius: 4px;
+box-shadow: rgb(0 0 0 / 50%) 0px 0px 18px 0px;
+padding: 10px;
+font-size: 14px;
+letter-spacing: 3px;
+width: 100px;
+opacity: 0;
+`;
+
+const SignOut = styled.div`
+position: relative;
+height: 48px;
+width: 48px;
+display: flex;
+`;
 
 
 
